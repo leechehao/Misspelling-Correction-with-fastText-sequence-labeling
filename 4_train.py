@@ -7,6 +7,7 @@ to customize the training process such as batch size, learning rate, number of o
 of training epochs and others.
 """
 
+import os
 import ast
 import time
 import argparse
@@ -48,7 +49,8 @@ def main():
     parser.add_argument("--train_file", type=str, required=True, help="The path to the training dataset file in CSV format.")
     parser.add_argument("--valid_file", type=str, required=True, help="The path to the validation dataset file in CSV format.")
     parser.add_argument("--vocab_file", type=str, required=True, help="The path to the vocabulary file in LineWord format. (one line = one word.)")
-    parser.add_argument("--fasttext_model", type=str, required=True, help="The path to the fastText model file")
+    parser.add_argument("--fasttext_model", type=str, required=True, help="The path to the fastText model file.")
+    parser.add_argument("--log_file", default="train.log", type=str, help="The path to the log file.")
     parser.add_argument("--pretrained_model_name_or_path", default="distilbert-base-uncased", type=str, help="The name or path to a pre-trained transformer model to use for training.")
     parser.add_argument("--batch_size", default=16, type=int, help="The number of examples to include in each training batch.")
     parser.add_argument("--learning_rate", default=1e-4, type=float, help="The learning rate to use for training.")
@@ -71,6 +73,9 @@ def main():
     # ===== 載入詞彙表 =====
     with open(args.vocab_file, "r", encoding="utf-8") as f:
         word2id = {line.strip(): i for i, line in enumerate(f.readlines())}
+
+    # ===== log檔 =====
+    log_file = open(args.log_file, "w", encoding="utf-8")
 
     # ===== 載入資料 =====
     df_train = pd.read_csv(args.train_file)
@@ -170,9 +175,12 @@ def main():
                     f"Loss: {losses.val:.4f}({losses.avg:.4f}) "
                     f"Grad: {grad_norm:.4f} "
                     f"LR: {scheduler.get_last_lr()[0]:.8f}",
+                    file=log_file,
                 )
+                log_file.flush()
+                os.fsync(log_file.fileno())
         duration = time.time() - start_time
-        epochs.write(f"Training duration: {duration:.3f} sec")
+        epochs.write(f"Training duration: {duration:.3f} sec", file=log_file)
 
         ####################################
         ##########    Evaluate    ##########
@@ -200,13 +208,15 @@ def main():
         metrics = sum([pre_seq == tar_seq for pre_seq, tar_seq in zip(predict, ground_true)]) / len(ground_true)
 
         duration = time.time() - start_time
-        epochs.write(f"Evaluating Loss: {losses.avg:.4f}")
-        epochs.write(f"Evaluation duration: {duration:.3f} sec")
-        epochs.write(f"Accuracy: {metrics:.4f}")
+        epochs.write(f"Evaluating Loss: {losses.avg:.4f}", file=log_file)
+        epochs.write(f"Evaluation duration: {duration:.3f} sec", file=log_file)
+        epochs.write(f"Accuracy: {metrics:.4f}", file=log_file)
 
         if metrics > best_metrics:
             model.save_pretrained(args.output_dir)
             best_metrics = metrics
+
+    log_file.close()
 
 
 if __name__ == "__main__":

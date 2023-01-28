@@ -124,6 +124,7 @@ usage: 4_train.py [-h] --output_dir OUTPUT_DIR \
                        --valid_file VALID_FILE \
                        --vocab_file VOCAB_FILE \
                        --fasttext_model FASTTEXT_MODEL \
+                       [--log_file LOG_FILE] \
                        [--pretrained_model_name_or_path PRETRAINED_MODEL_NAME_OR_PATH] \
                        [--batch_size BATCH_SIZE] \
                        [--learning_rate LEARNING_RATE] \
@@ -144,10 +145,11 @@ required arguments:
   --vocab_file VOCAB_FILE
                         The path to the vocabulary file in LineWord format. (one line = one word.)
   --fasttext_model FASTTEXT_MODEL
-                        The path to the fastText model file
+                        The path to the fastText model file.
 
 optional arguments:
   -h, --help            show this help message and exit
+  --log_file LOG_FILE   The path to the log file.
   --pretrained_model_name_or_path PRETRAINED_MODEL_NAME_OR_PATH
                         The name or path to a pre-trained transformer model to use for training.
   --batch_size BATCH_SIZE
@@ -171,7 +173,8 @@ optional arguments:
 + **train_file** *(str)* ─ The path to the training dataset file in CSV format.
 + **valid_file** *(str)* ─ The path to the validation dataset file in CSV format.
 + **vocab_file** *(str)* ─ The path to the vocabulary file in LineWord format. (one line = one word.)
-+ **fasttext_model** *(str)* ─ The path to the fastText model file
++ **fasttext_model** *(str)* ─ The path to the fastText model file.
++ **log_file** *(str, optional, defaults to **`train.log`**)* ─ The path to the log file.
 + **pretrained_model_name_or_path** *(str, optional, defaults to **`distilbert-base-uncased`**)* ─ The name or path to a pre-trained transformer model to use for training.
 + **batch_size** *(int, optional, defaults to **`16`**)* ─ The number of examples to include in each training batch.
 + **learning_rate** *(float, optional, defaults to **`1e-4`**)* ─ The learning rate to use for training.
