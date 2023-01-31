@@ -1,0 +1,6 @@
+distilbert-base-uncased-chest-ct-misspelling-ft:
+    epoch: 29/30
+    train_loss: 0.0002
+    valid Loss: 0.0762
+    valid_accuracy: 0.8935
+    test_accuracy: 0.8874
